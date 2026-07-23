@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HACENE TV - STALKER</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #141a24;
+            --bg-card: #141a24;
+            --bg-sidebar: #11161f;
+            --bg-input: #1e2636;
+            --border-color: #1e2636;
+            --border-light: #2a3344;
+            --text-primary: #eaeaea;
+            --text-secondary: #888;
+            --text-muted: #666;
+            --accent: #00d4ff;
+            --accent-hover: #00b8e6;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --shadow: 0 6px 15px rgba(0, 212, 255, 0.05);
+            --radius: 12px;
+            --transition: 0.3s;
+            --scrollbar-track: #0c1017;
+            --scrollbar-thumb: #2a3344;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-sidebar: #f0f2f5;
+            --bg-input: #e8ecf1;
+            --border-color: #d0d4dc;
+            --border-light: #b8bcc4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #555;
+            --text-muted: #777;
+            --accent: #007bff;
+            --accent-hover: #0056b3;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --scrollbar-track: #e8ecf1;
+            --scrollbar-thumb: #b8bcc4;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--bg-secondary);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            transition: background var(--transition), border-color var(--transition);
+        }
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-area h1 { font-size: 20px; color: var(--accent); font-weight: 700; }
+        .controls-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 7px 16px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: #0a0e14;
+        }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: var(--accent-hover); transform: scale(1.02); }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #c0392b; transform: scale(1.02); }
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+        .btn-outline:hover { background: var(--accent); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-success:hover { background: #27ae60; transform: scale(1.02); }
+        .btn-warning { background: var(--warning); color: #fff; }
+        .btn-warning:hover { background: #e67e22; transform: scale(1.02); }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .search-box {
+            padding: 7px 14px;
+            border-radius: 30px;
+            border: none;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            width: 160px;
+            outline: 2px solid transparent;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+        .search-box:focus { outline-color: var(--accent); }
+        .search-box::placeholder { color: var(--text-secondary); }
+        .badge-count {
+            background: var(--accent);
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .channel-counter { color: var(--text-secondary); font-size: 13px; }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        .user-info .email { color: var(--accent); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* ===== LAYOUT ===== */
+        .app-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 220px;
+            background: var(--bg-sidebar);
+            overflow-y: auto;
+            padding: 10px 0;
+            border-left: 1px solid var(--border-color);
+            flex-shrink: 0;
+            transition: background var(--transition), border-color var(--transition);
+        }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+        .sidebar .cat-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-right: 3px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            align-items: center;
+            color: var(--text-primary);
+        }
+        .sidebar .cat-item:hover { background: var(--bg-input); }
+        .sidebar .cat-item.active {
+            background: var(--bg-input);
+            border-right-color: var(--accent);
+            color: var(--accent);
+        }
+        .sidebar .cat-item .count {
+            background: var(--bg-input);
+            padding: 0 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        .sidebar .cat-item.active .count { background: var(--accent); color: #fff; }
+        .sidebar .cat-item .cat-fav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+            padding: 0 4px;
+        }
+        .sidebar .cat-item .cat-fav-btn:hover { color: var(--warning); }
+        .sidebar .cat-item .cat-fav-btn.active { color: var(--warning); }
+
+        .main-content {
+            flex: 1;
+            padding: 16px 20px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+            transition: background var(--transition);
+        }
+
+        /* ===== CHANNELS GRID ===== */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 14px;
+            margin-top: 8px;
+        }
+        .channel-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+        .channel-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        .channel-card .ch-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            word-break: break-word;
+        }
+        .channel-card .ch-name i { color: var(--accent); font-size: 14px; flex-shrink: 0; }
+        .channel-card .ch-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: var(--bg-input);
+            flex-shrink: 0;
+        }
+        .channel-card .ch-cat {
+            font-size: 11px;
+            background: var(--bg-input);
+            padding: 2px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            width: fit-content;
+            color: var(--text-secondary);
+        }
+        .channel-card .card-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .channel-card .btn-play {
+            flex: 1;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 6px 0;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .channel-card .btn-play:hover { background: var(--accent-hover); }
+        .channel-card .btn-fav {
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+        .channel-card .btn-fav.active { background: var(--warning); color: #fff; }
+        .channel-card .btn-fav:hover { background: var(--border-light); }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 350px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        .empty-state i { font-size: 60px; color: var(--accent); margin-bottom: 15px; }
+        .empty-state h2 { font-size: 22px; margin-bottom: 8px; color: var(--text-primary); }
+        .empty-state p { max-width: 400px; line-height: 1.8; font-size: 14px; }
+        .empty-state .btn-add-large {
+            margin-top: 20px;
+            background: var(--accent);
+            color: #fff;
+            padding: 10px 35px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .empty-state .btn-add-large:hover { background: var(--accent-hover); transform: scale(1.02); }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 25px;
+            width: 94%;
+            max-width: 520px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: background var(--transition), border-color var(--transition);
+        }
+        .modal-box .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 26px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .modal-box .close-modal:hover { color: var(--text-primary); transform: rotate(90deg); }
+        .modal-box h2 { color: var(--text-primary); margin-bottom: 16px; font-size: 22px; }
+        .modal-box h2 i { margin-left: 8px; }
+        .modal-box label { display: block; margin: 10px 0 4px 0; color: var(--text-secondary); font-size: 13px; }
+        .modal-box input, .modal-box textarea, .modal-box select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .modal-box input:focus, .modal-box textarea:focus, .modal-box select:focus { border-color: var(--accent); }
+        .modal-box select option { background: var(--bg-secondary); }
+        .modal-box .btn-save {
+            width: 100%;
+            margin-top: 16px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .modal-box .btn-save:hover { background: var(--accent-hover); }
+        .modal-box .btn-danger { background: var(--danger); color: #fff; }
+        .modal-box .btn-danger:hover { background: #c0392b; }
+        .modal-box .status-msg {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-align: center;
+        }
+        .modal-box .status-msg.success { color: var(--success); border: 1px solid var(--success); }
+        .modal-box .status-msg.error { color: var(--danger); border: 1px solid var(--danger); }
+
+        /* ===== ADMIN PANEL ===== */
+        .admin-panel {
+            background: var(--bg-sidebar);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+        .admin-panel h3 { color: var(--accent); margin-bottom: 12px; }
+        .admin-panel table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .admin-panel th {
+            text-align: right;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        .admin-panel td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        .admin-panel .user-email { color: var(--accent); }
+        .admin-panel .status-badge {
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .admin-panel .status-badge.active { background: var(--success); color: #fff; }
+        .admin-panel .status-badge.inactive { background: var(--danger); color: #fff; }
+        .admin-panel .btn-icon {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 6px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        .admin-panel .btn-icon:hover { color: var(--text-primary); }
+        .admin-panel .btn-icon.danger:hover { color: var(--danger); }
+        .admin-panel .btn-icon.success:hover { color: var(--success); }
+        .admin-panel .btn-icon.warning:hover { color: var(--warning); }
+
+        /* ===== SCROLL TO TOP ===== */
+        #scrollTopBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #scrollTopBtn:hover {
+            transform: scale(1.1);
+            background: var(--accent-hover);
+        }
+        #scrollTopBtn.show { display: flex; }
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle {
+            background: var(--bg-input);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:hover { background: var(--border-light); }
+
+        /* ===== NOTIFICATIONS ===== */
+        .notif-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            background: none;
+            border: none;
+            padding: 4px 6px;
+        }
+        .notif-bell:hover { color: var(--accent); }
+        .notif-bell .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 18px;
+            text-align: center;
+        }
+        .notif-dropdown {
+            position: absolute;
+            top: 44px;
+            right: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            width: 340px;
+            max-height: 360px;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none;
+            padding: 10px 0;
+        }
+        .notif-dropdown.active { display: block; }
+        .notif-dropdown .notif-item {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notif-dropdown .notif-item:last-child { border-bottom: none; }
+        .notif-dropdown .notif-item .notif-text { flex: 1; }
+        .notif-dropdown .notif-item .notif-time {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-left: 10px;
+        }
+        .notif-dropdown .notif-item .notif-read-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .notif-dropdown .notif-empty {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .notif-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column; height: auto; }
+            .sidebar {
+                width: 100%;
+                max-height: 120px;
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding: 6px 10px;
+                border-left: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .sidebar .cat-item {
+                white-space: nowrap;
+                border-right: none;
+                border-bottom: 3px solid transparent;
+                padding: 5px 12px;
+                font-size: 13px;
+            }
+            .sidebar .cat-item.active { border-bottom-color: var(--accent); }
+            .sidebar .cat-item .count { display: none; }
+            .sidebar .cat-item .cat-fav-btn { display: none; }
+            .header { flex-direction: column; align-items: stretch; }
+            .controls-area { justify-content: center; gap: 6px; }
+            .search-box { width: 100%; }
+            .channels-grid { grid-template-columns: 1fr; }
+            .modal-box { padding: 18px; }
+            .admin-panel table { font-size: 11px; }
+            .admin-panel th, .admin-panel td { padding: 4px 6px; }
+            .user-info .email { max-width: 80px; }
+            .notif-dropdown { width: 290px; right: -20px; }
+            #scrollTopBtn { width: 40px; height: 40px; font-size: 18px; bottom: 20px; right: 20px; }
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+        .lang-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+        .lang-btn.active { border-color: var(--accent); color: var(--accent); }
+
+        /* ===== ABOUT / CONTENT MODAL ===== */
+        .modal-box .about-content, .modal-box .contact-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        .modal-box .about-content h3, .modal-box .contact-content h3 {
+            color: var(--text-primary);
+            margin: 12px 0 6px;
+        }
+        .modal-box .about-content p, .modal-box .contact-content p {
+            margin-bottom: 10px;
+        }
+        .modal-box .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border-radius: 8px;
+        }
+        .modal-box .contact-item i {
+            width: 24px;
+            color: var(--accent);
+            font-size: 18px;
+        }
+        .modal-box .contact-item span {
+            color: var(--text-primary);
+        }
+        .modal-box .contact-item a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .modal-box .contact-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header" id="mainHeader">
+        <div class="logo-area">
+            <h1><i class="fas fa-satellite-dish" style="color:var(--accent);"></i> HACENE TV</h1>
+        </div>
+        <div class="controls-area" id="headerControls"></div>
+    </header>
+
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar"></aside>
+        <main class="main-content" id="mainContent">
+            <div id="channelsContainer"></div>
+            <div id="scrollTrigger" style="height:1px; visibility:hidden;"></div>
+        </main>
+    </div>
+
+    <!-- ===== SCROLL TO TOP BUTTON ===== -->
+    <button id="scrollTopBtn" onclick="scrollToTop()" title="الرجوع للأعلى">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- ===== MODAL: Login ===== -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeLoginModal()">✕</button>
+            <h2 id="loginModalTitle"><i class="fas fa-sign-in-alt" style="color:var(--accent);"></i> تسجيل الدخول</h2>
+            <div id="loginForm">
+                <label id="loginEmailLabel">البريد الإلكتروني</label>
+                <input type="email" id="loginEmail" placeholder="example@email.com" />
+                <label id="loginPasswordLabel">كلمة المرور</label>
+                <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" />
+                <button class="btn-save" id="loginBtn" onclick="login()"><i class="fas fa-sign-in-alt"></i> دخول</button>
+                <div style="text-align:center; margin-top:12px; color:var(--text-secondary); font-size:13px;">
+                    <span id="noAccountText">ليس لديك حساب؟</span> <span style="color:var(--accent); cursor:pointer;" onclick="showRegister()" id="registerLink">سجل الآن</span>
+                </div>
+                <div id="loginStatus" class="status-msg"></div>
+            </div>
+            <div id="registerForm" style="display:none;">
+                <label id="registerEmailLabel">البريد الإلكتروني</label>
+                <input type="email" id="registerEmail" placeholder="example@email.com" />
+                <label id="registerPasswordLabel">كلمة المرور</label>
+                <input type="password" id="registerPassword" placeholder="6 أحرف على الأقل" />
+                <button class="btn-save" id="registerBtn" onclick="register()"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
+                <div style="text-align:center; margin-top:12px; color:var(--text-secondary); font-size:13px;">
+                    <span id="haveAccountText">لديك حساب؟</span> <span style="color:var(--accent); cursor:pointer;" onclick="showLogin()" id="loginLink">تسجيل الدخول</span>
+                </div>
+                <div id="registerStatus" class="status-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: STALKER Portal ===== -->
+    <div class="modal-overlay" id="stalkerModal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeStalkerModal()">✕</button>
+            <h2 id="stalkerModalTitle"><i class="fas fa-key" style="color:#9b59b6;"></i> إعدادات STALKER Portal</h2>
+            <label id="stalkerServerLabel">رابط البوابة (Portal URL)</label>
+            <input type="url" id="stalkerServer" placeholder="http://example.com:8080" />
+            <label id="stalkerMacLabel">عنوان MAC</label>
+            <input type="text" id="stalkerMac" placeholder="00:1A:79:XX:XX:XX" />
+            <label id="stalkerDeviceIdLabel">معرف الجهاز (Device ID - اختياري)</label>
+            <input type="text" id="stalkerDeviceId" placeholder="أدخل Device ID" />
+            <label id="stalkerSerialLabel">الرقم التسلسلي (Serial - اختياري)</label>
+            <input type="text" id="stalkerSerial" placeholder="أدخل Serial" />
+            <button class="btn-save" id="stalkerSaveBtn" onclick="saveStalkerSettings()"><i class="fas fa-save"></i> حفظ وجلب القنوات</button>
+            <div id="stalkerStatus" class="status-msg"></div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Add Channel ===== -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeAddModal()">✕</button>
+            <h2 id="addModalTitle"><i class="fas fa-plus-circle" style="color:var(--accent);"></i> إضافة قناة</h2>
+            <label id="addNameLabel">اسم القناة *</label>
+            <input type="text" id="inputName" placeholder="مثال: beIN Sports 1" />
+            <label id="addCategoryLabel">التصنيف</label>
+            <input type="text" id="inputCategory" placeholder="مثال: رياضة" />
+            <label id="addUrlLabel">رابط المشاهدة (.m3u8) *</label>
+            <input type="url" id="inputUrl" placeholder="http://example.com/stream.m3u8" />
+            <button class="btn-save" id="addSaveBtn" onclick="saveChannel()"><i class="fas fa-save"></i> حفظ</button>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Admin Panel ===== -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-box" style="max-width: 800px;">
+            <button class="close-modal" onclick="closeAdminModal()">✕</button>
+            <h2 id="adminModalTitle"><i class="fas fa-users-cog" style="color:var(--warning);"></i> لوحة تحكم المدير</h2>
+            <div id="adminContent">
+                <div class="admin-panel">
+                    <h3 id="adminUsersTitle">إدارة المستخدمين</h3>
+                    <div id="adminUsersTable" style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th id="adminEmailTh">البريد</th>
+                                    <th id="adminStatusTh">الحالة</th>
+                                    <th id="adminStalkerTh">Stalker</th>
+                                    <th id="adminActionsTh">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="admin-panel">
+                    <h3 id="adminNotifTitle"><i class="fas fa-bell"></i> إرسال إشعار لجميع المستخدمين</h3>
+                    <label id="adminNotifLabel">نص الإشعار</label>
+                    <textarea id="adminNotifMessage" rows="3" placeholder="أدخل رسالة الإشعار..." style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-primary); font-size:14px; resize:vertical;"></textarea>
+                    <label id="adminNotifTargetLabel">البريد الإلكتروني المستهدف (اختياري)</label>
+                    <input type="email" id="adminNotifTarget" placeholder="example@email.com - اترك فارغاً للإرسال للجميع" style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-primary); font-size:14px;" />
+                    <button class="btn-save" onclick="sendNotification()" style="margin-top:10px;"><i class="fas fa-paper-plane"></i> إرسال الإشعار</button>
+                    <div id="adminNotifStatus" class="status-msg"></div>
+                </div>
+            </div>
+            <div id="adminStatus" class="status-msg"></div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Edit User ===== -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeEditUserModal()">✕</button>
+            <h2 id="editUserModalTitle"><i class="fas fa-user-edit" style="color:var(--warning);"></i> تعديل المستخدم</h2>
+            <div id="editUserForm">
+                <label id="editUserEmailLabel">البريد الإلكتروني</label>
+                <input type="email" id="editUserEmail" disabled style="opacity:0.6;" />
+                <label id="editUserStatusLabel">الحالة</label>
+                <select id="editUserStatus">
+                    <option value="true" id="editUserStatusActive">نشط</option>
+                    <option value="false" id="editUserStatusInactive">معطل</option>
+                </select>
+                <label id="editUserServerLabel">رابط البوابة (Stalker)</label>
+                <input type="url" id="editUserServer" placeholder="http://example.com:8080" />
+                <label id="editUserMacLabel">عنوان MAC</label>
+                <input type="text" id="editUserMac" placeholder="00:1A:79:XX:XX:XX" />
+                <label id="editUserDeviceIdLabel">معرف الجهاز (Device ID)</label>
+                <input type="text" id="editUserDeviceId" placeholder="أدخل Device ID" />
+                <label id="editUserSerialLabel">الرقم التسلسلي (Serial)</label>
+                <input type="text" id="editUserSerial" placeholder="أدخل Serial" />
+                <button class="btn-save" id="editUserSaveBtn" onclick="saveEditUser()"><i class="fas fa-save"></i> حفظ التعديلات</button>
+                <div id="editUserStatusMsg" class="status-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Loading ===== -->
+    <div class="modal-overlay" id="loadingModal">
+        <div class="modal-box" style="text-align:center; max-width:400px;">
+            <h2 id="loadingModalTitle"><i class="fas fa-spinner fa-spin" style="color:var(--accent);"></i> جاري التحميل</h2>
+            <p id="loadingModalText" style="font-size:16px; margin:20px 0;">يرجى الانتظار، سيتم تحميل القنوات...</p>
+            <div style="width:100%; height:4px; background:var(--bg-input); border-radius:4px; overflow:hidden; margin-top:10px;">
+                <div id="loadingProgress" style="width:0%; height:100%; background:var(--accent); transition: width 0.5s;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: About ===== -->
+    <div class="modal-overlay" id="aboutModal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeAboutModal()">✕</button>
+            <h2 id="aboutModalTitle"><i class="fas fa-info-circle" style="color:var(--accent);"></i> من نحن</h2>
+            <div class="about-content" id="aboutContent">
+                <p>HACENE TV هو منصة IPTV متطورة تتيح لك مشاهدة آلاف القنوات الرياضية، الترفيهية، الوثائقية، والأطفال بجودة عالية.</p>
+                <p>نحن نقدم خدمة مستقرة وسريعة مع دعم لبوابات STALKER MAC Portal، بالإضافة إلى إمكانية إضافة قنواتك المفضلة يدوياً.</p>
+                <p>تم تطوير المنصة باستخدام أحدث التقنيات لضمان تجربة مشاهدة سلسة على جميع الأجهزة.</p>
+                <p><strong>نسعى دائماً لتقديم الأفضل لمستخدمينا.</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: Contact ===== -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeContactModal()">✕</button>
+            <h2 id="contactModalTitle"><i class="fas fa-envelope" style="color:var(--accent);"></i> تواصل معنا</h2>
+            <div class="contact-content" id="contactContent">
+                <p>للتواصل معنا، يمكنك استخدام المعلومات التالية:</p>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:stevenhacen@gmail.com">stevenhacen@gmail.com</a>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <a href="tel:0542163526">0542163526</a>
+                </div>
+                <p style="margin-top:15px;">نحن في انتظار استفساراتكم واقتراحاتكم.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== NOTIFICATION DROPDOWN (dynamic) ===== -->
+    <div class="notif-dropdown" id="notifDropdown"></div>
+
+    <script>
+        // ================================================================
+        // 0.  القنوات الافتراضية (اتركها فارغة)
+        // ================================================================
+        const DEFAULT_CHANNELS = [];
+
+        // ================================================================
+        // 0b.  خريطة التصنيفات المخصصة (اتركها فارغة)
+        // ================================================================
+        const CHANNEL_CATEGORY_MAP = {};
+
+        // ================================================================
+        // 0c.  الترجمات (i18n) - موسعة
+        // ================================================================
+        const translations = {
+            ar: {
+                "live": "مباشر",
+                "login": "دخول",
+                "register": "تسجيل",
+                "adminPanel": "لوحة التحكم",
+                "stalker": "Stalker",
+                "add": "إضافة",
+                "logout": "خروج",
+                "search": "بحث",
+                "all": "الكل",
+                "favorites": "المفضلة",
+                "removeCatFav": "إزالة التصنيف من المفضلة",
+                "addCatFav": "إضافة التصنيف إلى المفضلة",
+                "noChannels": "لا توجد قنوات",
+                "pleaseLogin": "يرجى تسجيل الدخول",
+                "loginToView": "سجل الدخول لمشاهدة القنوات وإدارة اشتراكك.",
+                "loginButton": "تسجيل الدخول",
+                "setupStalker": "قم بإعداد بوابة STALKER بالضغط على زر",
+                "adminOnly": "للمدير فقط",
+                "orAddManual": "أو أضف قناة يدوياً.",
+                "addNewChannel": "إضافة قناة جديدة",
+                "play": "تشغيل",
+                "addFav": "إضافة إلى المفضلة",
+                "removeFav": "إزالة من المفضلة",
+                "general": "عام",
+                "stalkerSettings": "إعدادات STALKER Portal",
+                "portalUrl": "رابط البوابة (Portal URL)",
+                "macAddress": "عنوان MAC",
+                "deviceId": "معرف الجهاز (Device ID - اختياري)",
+                "serial": "الرقم التسلسلي (Serial - اختياري)",
+                "saveAndFetch": "حفظ وجلب القنوات",
+                "addChannel": "إضافة قناة",
+                "channelName": "اسم القناة *",
+                "category": "التصنيف",
+                "streamUrl": "رابط المشاهدة (.m3u8) *",
+                "save": "حفظ",
+                "adminDashboard": "لوحة تحكم المدير",
+                "userManagement": "إدارة المستخدمين",
+                "email": "البريد",
+                "status": "الحالة",
+                "actions": "الإجراءات",
+                "active": "نشط",
+                "inactive": "معطل",
+                "edit": "تعديل",
+                "delete": "حذف",
+                "editUser": "تعديل المستخدم",
+                "saveChanges": "حفظ التعديلات",
+                "loading": "جاري التحميل",
+                "pleaseWait": "يرجى الانتظار، سيتم تحميل القنوات...",
+                "noUsers": "لا يوجد مستخدمون",
+                "fillEmailPassword": "⚠️ يرجى إدخال البريد وكلمة المرور",
+                "passwordMin6": "⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+                "updateSuccess": "✅ تم التحديث بنجاح",
+                "userNotSpecified": "⚠️ لم يتم تحديد المستخدم",
+                "adminOnlyPage": "⚠️ هذه الصفحة مخصصة للمدير فقط",
+                "adminOnlySettings": "⚠️ هذه الإعدادات متاحة للمدير فقط",
+                "notAuthorized": "⚠️ غير مصرح لك بتعديل هذه الإعدادات",
+                "loginFirst": "⚠️ يرجى تسجيل الدخول أولاً",
+                "channelNotFound": "⚠️ القناة غير موجودة.",
+                "invalidUrl": "⚠️ هذا الرابط غير صحيح.",
+                "fillAllFields": "⚠️ يرجى ملء جميع الحقول",
+                "enterChannelName": "⚠️ يرجى إدخال اسم القناة.",
+                "pasteChannelUrl": "⚠️ يرجى لصق رابط القناة.",
+                "userNotFound": "المستخدم غير موجود",
+                "confirmLogout": "هل أنت متأكد من تسجيل الخروج؟",
+                "confirmDeleteUser": "هل أنت متأكد من حذف هذا المستخدم نهائياً؟",
+                "loginInProgress": "⏳ جاري تسجيل الدخول...",
+                "registerInProgress": "⏳ جاري إنشاء الحساب...",
+                "fetchSuccess": "✅ تم جلب {count} قناة بنجاح",
+                "noAccount": "ليس لديك حساب؟",
+                "registerNow": "سجل الآن",
+                "haveAccount": "لديك حساب؟",
+                "loginNow": "تسجيل الدخول",
+                "lang": "اللغة",
+                "notifications": "الإشعارات",
+                "noNotifications": "لا توجد إشعارات",
+                "sendNotification": "إرسال إشعار لجميع المستخدمين",
+                "notificationMessage": "نص الإشعار",
+                "send": "إرسال",
+                "notificationSent": "✅ تم إرسال الإشعار إلى {count} مستخدم",
+                "adminNotifTargetLabel": "البريد الإلكتروني المستهدف (اختياري)",
+                "theme": "المظهر",
+                "scrollToTop": "الرجوع للأعلى",
+                "loadingMore": "جاري تحميل المزيد...",
+                "endOfList": "هذه نهاية القائمة",
+                "unread": "غير مقروء",
+                "markAsRead": "تحديد كمقروء",
+                "about": "من نحن",
+                "contact": "تواصل معنا",
+                "aboutTitle": "من نحن",
+                "contactTitle": "تواصل معنا",
+                "aboutDesc": "HACENE TV هو منصة IPTV متطورة تتيح لك مشاهدة آلاف القنوات الرياضية، الترفيهية، الوثائقية، والأطفال بجودة عالية. نحن نقدم خدمة مستقرة وسريعة مع دعم لبوابات STALKER MAC Portal، بالإضافة إلى إمكانية إضافة قنواتك المفضلة يدوياً. تم تطوير المنصة باستخدام أحدث التقنيات لضمان تجربة مشاهدة سلسة على جميع الأجهزة. نسعى دائماً لتقديم الأفضل لمستخدمينا.",
+                "contactInfo": "للتواصل معنا، يمكنك استخدام المعلومات التالية:",
+                "contactWaiting": "نحن في انتظار استفساراتكم واقتراحاتكم.",
+                "adminStalkerTh": "Stalker"
+            },
+            fr: {
+                "live": "En direct",
+                "login": "Connexion",
+                "register": "S'inscrire",
+                "adminPanel": "Tableau de bord",
+                "stalker": "Stalker",
+                "add": "Ajouter",
+                "logout": "Déconnexion",
+                "search": "Rechercher",
+                "all": "Tout",
+                "favorites": "Favoris",
+                "removeCatFav": "Retirer la catégorie des favoris",
+                "addCatFav": "Ajouter la catégorie aux favoris",
+                "noChannels": "Aucune chaîne",
+                "pleaseLogin": "Veuillez vous connecter",
+                "loginToView": "Connectez-vous pour voir les chaînes et gérer votre abonnement.",
+                "loginButton": "Se connecter",
+                "setupStalker": "Configurez un portail STALKER en cliquant sur le bouton",
+                "adminOnly": "réservé à l'administrateur",
+                "orAddManual": "ou ajoutez une chaîne manuellement.",
+                "addNewChannel": "Ajouter une nouvelle chaîne",
+                "play": "Lire",
+                "addFav": "Ajouter aux favoris",
+                "removeFav": "Retirer des favoris",
+                "general": "Général",
+                "stalkerSettings": "Paramètres STALKER Portal",
+                "portalUrl": "URL du portail",
+                "macAddress": "Adresse MAC",
+                "deviceId": "ID de l'appareil (Device ID - optionnel)",
+                "serial": "Numéro de série (Serial - optionnel)",
+                "saveAndFetch": "Enregistrer et récupérer les chaînes",
+                "addChannel": "Ajouter une chaîne",
+                "channelName": "Nom de la chaîne *",
+                "category": "Catégorie",
+                "streamUrl": "Lien de visionnage (.m3u8) *",
+                "save": "Enregistrer",
+                "adminDashboard": "Tableau de bord de l'administrateur",
+                "userManagement": "Gestion des utilisateurs",
+                "email": "Email",
+                "status": "Statut",
+                "actions": "Actions",
+                "active": "Actif",
+                "inactive": "Inactif",
+                "edit": "Modifier",
+                "delete": "Supprimer",
+                "editUser": "Modifier l'utilisateur",
+                "saveChanges": "Enregistrer les modifications",
+                "loading": "Chargement en cours",
+                "pleaseWait": "Veuillez patienter, les chaînes sont en cours de chargement...",
+                "noUsers": "Aucun utilisateur",
+                "fillEmailPassword": "⚠️ Veuillez saisir l'email et le mot de passe",
+                "passwordMin6": "⚠️ Le mot de passe doit comporter au moins 6 caractères",
+                "updateSuccess": "✅ Mise à jour réussie",
+                "userNotSpecified": "⚠️ Utilisateur non spécifié",
+                "adminOnlyPage": "⚠️ Cette page est réservée à l'administrateur",
+                "adminOnlySettings": "⚠️ Ces paramètres sont réservés à l'administrateur",
+                "notAuthorized": "⚠️ Vous n'êtes pas autorisé à modifier ces paramètres",
+                "loginFirst": "⚠️ Veuillez vous connecter d'abord",
+                "channelNotFound": "⚠️ La chaîne n'existe pas.",
+                "invalidUrl": "⚠️ Ce lien n'est pas valide.",
+                "fillAllFields": "⚠️ Veuillez remplir tous les champs",
+                "enterChannelName": "⚠️ Veuillez entrer le nom de la chaîne.",
+                "pasteChannelUrl": "⚠️ Veuillez coller le lien de la chaîne.",
+                "userNotFound": "Utilisateur introuvable",
+                "confirmLogout": "Êtes-vous sûr de vouloir vous déconnecter ?",
+                "confirmDeleteUser": "Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ?",
+                "loginInProgress": "⏳ Connexion en cours...",
+                "registerInProgress": "⏳ Création du compte en cours...",
+                "fetchSuccess": "✅ {count} chaînes récupérées avec succès",
+                "noAccount": "Pas de compte ?",
+                "registerNow": "S'inscrire",
+                "haveAccount": "Déjà un compte ?",
+                "loginNow": "Se connecter",
+                "lang": "Langue",
+                "notifications": "Notifications",
+                "noNotifications": "Aucune notification",
+                "sendNotification": "Envoyer une notification à tous les utilisateurs",
+                "notificationMessage": "Message de la notification",
+                "send": "Envoyer",
+                "notificationSent": "✅ Notification envoyée à {count} utilisateur(s)",
+                "adminNotifTargetLabel": "Email ciblé (optionnel)",
+                "theme": "Thème",
+                "scrollToTop": "Retour en haut",
+                "loadingMore": "Chargement...",
+                "endOfList": "Fin de la liste",
+                "unread": "Non lu",
+                "markAsRead": "Marquer comme lu",
+                "about": "À propos",
+                "contact": "Nous contacter",
+                "aboutTitle": "À propos de nous",
+                "contactTitle": "Nous contacter",
+                "aboutDesc": "HACENE TV est une plateforme IPTV avancée qui vous permet de regarder des milliers de chaînes sportives, de divertissement, documentaires et pour enfants en haute qualité. Nous offrons un service stable et rapide avec le support des portails STALKER MAC Portal, ainsi que la possibilité d'ajouter manuellement vos chaînes préférées. La plateforme a été développée avec les dernières technologies pour garantir une expérience de visionnage fluide sur tous les appareils. Nous nous efforçons toujours d'offrir le meilleur à nos utilisateurs.",
+                "contactInfo": "Pour nous contacter, vous pouvez utiliser les informations suivantes :",
+                "contactWaiting": "Nous attendons vos questions et suggestions.",
+                "adminStalkerTh": "Stalker"
+            }
+        };
+
+        // ================================================================
+        // 1.  الإعدادات العامة
+        // ================================================================
+        const API_URL = 'https://hacenetv2-0-ua0u.onrender.com/api';
+
+        let currentUser = null;
+        let token = null;
+        let allChannels = [];
+        let currentCategory = 'الكل';
+        let favorites = [];
+        let appInitialized = false;
+        let currentLang = 'ar';
+        let displayCount = 20;
+        const STEP = 20;
+        let isLoadingMore = false;
+        let allChannelsFiltered = [];
+        let notifications = [];
+        let unreadCount = 0;
+
+        // ================================================================
+        // 2.  دوال الترجمة
+        // ================================================================
+        function getTranslation(key, params = {}) {
+            const langData = translations[currentLang] || translations.ar;
+            let text = langData[key] || key;
+            for (let [k, v] of Object.entries(params)) {
+                text = text.replace(`{${k}}`, v);
+            }
+            return text;
+        }
+
+        function translateCategory(cat) {
+            if (!cat) return cat;
+            if (cat === 'الكل') return getTranslation('all');
+            if (cat === 'المفضلة') return getTranslation('favorites');
+            if (cat === 'عام') return getTranslation('general');
+            return cat;
+        }
+
+        function setLanguage(lang) {
+            if (lang === 'ar' || lang === 'fr') {
+                currentLang = lang;
+                localStorage.setItem('hacene_lang', lang);
+                document.documentElement.lang = lang === 'ar' ? 'ar' : 'fr';
+                document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+                updateAllTexts();
+                renderHeader();
+                buildSidebar();
+                applyFilters(true);
+                setupInfiniteScroll();
+                document.querySelectorAll('.lang-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.lang === lang);
+                });
+            }
+        }
+
+        function updateAllTexts() {
+            // يتم التحديث عند فتح النوافذ
+        }
+
+        // ================================================================
+        // 3.  إدارة التوكن والمستخدمين
+        // ================================================================
+        function getToken() { return localStorage.getItem('hacene_token'); }
+        function setToken(t) { token = t; if (t) localStorage.setItem('hacene_token', t); else localStorage.removeItem('hacene_token'); }
+        function getUser() { const stored = localStorage.getItem('hacene_user'); if (stored) { try { return JSON.parse(stored); } catch (e) { return null; } } return null; }
+        function setUser(u) { currentUser = u; if (u) localStorage.setItem('hacene_user', JSON.stringify(u)); else localStorage.removeItem('hacene_user'); }
+        function getFavorites() { const stored = localStorage.getItem('hacene_favorites'); if (stored) { try { return JSON.parse(stored); } catch (e) { return []; } } return []; }
+        function setFavorites(f) { favorites = f; localStorage.setItem('hacene_favorites', JSON.stringify(f)); }
+
+        // ================================================================
+        // 4.  API
+        // ================================================================
+        function getAuthHeaders() {
+            const t = getToken();
+            return t ? { 'Authorization': 'Bearer ' + t } : {};
+        }
+
+        async function apiCall(method, endpoint, body = null) {
+            const options = { method, headers: { 'Content-Type': 'application/json', ...getAuthHeaders() } };
+            if (body) options.body = JSON.stringify(body);
+            try {
+                const response = await fetch(API_URL + endpoint, options);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Request failed');
+                return data;
+            } catch (err) { console.error('API Call Error:', err); throw err; }
+        }
+
+        // ================================================================
+        // 5.  دوال العرض
+        // ================================================================
+        function renderHeader() {
+            const container = document.getElementById('headerControls');
+            const user = getUser();
+            const lang = currentLang;
+
+            const langButtons = `
+                <button class="lang-btn ${lang === 'ar' ? 'active' : ''}" data-lang="ar" onclick="setLanguage('ar')">عربي</button>
+                <button class="lang-btn ${lang === 'fr' ? 'active' : ''}" data-lang="fr" onclick="setLanguage('fr')">Français</button>
+            `;
+
+            const themeToggle = `
+                <button class="theme-toggle" onclick="toggleTheme()" title="${getTranslation('theme')}">
+                    <i class="fas ${getThemeIcon()}"></i>
+                </button>
+            `;
+
+            const aboutBtn = `
+                <button class="btn btn-outline btn-sm" onclick="openAboutModal()">
+                    <i class="fas fa-info-circle"></i> ${getTranslation('about')}
+                </button>
+            `;
+            const contactBtn = `
+                <button class="btn btn-outline btn-sm" onclick="openContactModal()">
+                    <i class="fas fa-envelope"></i> ${getTranslation('contact')}
+                </button>
+            `;
+
+            let notifBtn = '';
+            if (user) {
+                notifBtn = `
+                    <div class="notif-wrapper">
+                        <button class="notif-bell" onclick="toggleNotifDropdown()" id="notifBellBtn">
+                            <i class="fas fa-bell"></i>
+                            ${unreadCount > 0 ? `<span class="badge" id="notifBadge">${unreadCount}</span>` : ''}
+                        </button>
+                    </div>
+                `;
+            }
+
+            if (!user) {
+                container.innerHTML = `
+                    ${langButtons}
+                    ${themeToggle}
+                    ${aboutBtn}
+                    ${contactBtn}
+                    <span class="badge-count"><i class="fas fa-play"></i> ${getTranslation('live')}</span>
+                    <button class="btn btn-primary" onclick="openLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> ${getTranslation('login')}
+                    </button>
+                    <button class="btn btn-outline" onclick="openRegisterModal()">
+                        <i class="fas fa-user-plus"></i> ${getTranslation('register')}
+                    </button>
+                `;
+                return;
+            }
+
+            let adminBtn = '', stalkerBtn = '';
+            if (user.role === 'admin') {
+                adminBtn = `<button class="btn btn-warning btn-sm" onclick="openAdminModal()">
+                    <i class="fas fa-users-cog"></i> ${getTranslation('adminPanel')}
+                </button>`;
+                stalkerBtn = `<button class="btn btn-outline btn-sm" onclick="openStalkerModal()">
+                    <i class="fas fa-key"></i> ${getTranslation('stalker')}
+                </button>`;
+            }
+
+            container.innerHTML = `
+                ${langButtons}
+                ${themeToggle}
+                ${aboutBtn}
+                ${contactBtn}
+                ${notifBtn}
+                <span class="badge-count"><i class="fas fa-play"></i> ${getTranslation('live')}</span>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span class="email" title="${user.email}">${user.email}</span>
+                    ${user.role === 'admin' ? '<span style="color:var(--warning);font-size:11px;">('+getTranslation('adminPanel')+')</span>' : ''}
+                </div>
+                ${adminBtn}
+                ${stalkerBtn}
+                <button class="btn btn-primary btn-sm" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i> ${getTranslation('add')}
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> ${getTranslation('logout')}
+                </button>
+                <input type="text" class="search-box" id="searchInput" placeholder="${getTranslation('search')}..." oninput="applyFilters(true)" />
+                <span class="channel-counter" id="channelCount">0</span>
+            `;
+            updateNotifBadge();
+        }
+
+        function getThemeIcon() {
+            const theme = localStorage.getItem('hacene_theme') || 'dark';
+            return theme === 'dark' ? 'fa-moon' : 'fa-sun';
+        }
+
+        function toggleTheme() {
+            const current = localStorage.getItem('hacene_theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('hacene_theme', next);
+            document.documentElement.setAttribute('data-theme', next);
+            renderHeader();
+        }
+
+        function applyTheme() {
+            const theme = localStorage.getItem('hacene_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function buildSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (!allChannels || allChannels.length === 0) {
+                sidebar.innerHTML = `<div class="cat-item" style="color:var(--text-secondary); text-align:center;">${getTranslation('noChannels')}</div>`;
+                return;
+            }
+            const cats = new Set(allChannels.map(ch => ch.category || 'عام'));
+            const sorted = ['الكل', 'المفضلة', ...Array.from(cats).sort()];
+
+            sidebar.innerHTML = sorted.map(cat => {
+                let count = 0;
+                if (cat === 'الكل') count = allChannels.length;
+                else if (cat === 'المفضلة') count = favorites.length;
+                else count = allChannels.filter(ch => (ch.category || 'عام') === cat).length;
+                const active = cat === currentCategory ? 'active' : '';
+                const isCatFav = cat !== 'الكل' && cat !== 'المفضلة' && isCategoryFavorite(cat);
+                const displayName = translateCategory(cat);
+                return `<div class="cat-item ${active}" data-cat="${cat}" onclick="selectCategory('${cat}')">
+                            <span>${displayName}</span>
+                            <span class="count">${count}</span>
+                            ${cat !== 'الكل' && cat !== 'المفضلة' ? `<button class="cat-fav-btn ${isCatFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleCategoryFavorite('${cat}')" title="${isCatFav ? getTranslation('removeCatFav') : getTranslation('addCatFav')}"><i class="fas fa-star"></i></button>` : ''}
+                        </div>`;
+            }).join('');
+        }
+
+        function isCategoryFavorite(category) {
+            const catChannels = allChannels.filter(ch => (ch.category || 'عام') === category);
+            if (catChannels.length === 0) return false;
+            return catChannels.every(ch => favorites.includes(getChannelId(ch)));
+        }
+
+        function toggleCategoryFavorite(category) {
+            const catChannels = allChannels.filter(ch => (ch.category || 'عام') === category);
+            if (catChannels.length === 0) return;
+            const isFav = isCategoryFavorite(category);
+            if (isFav) {
+                catChannels.forEach(ch => {
+                    const id = getChannelId(ch);
+                    const idx = favorites.indexOf(id);
+                    if (idx > -1) favorites.splice(idx, 1);
+                });
+            } else {
+                catChannels.forEach(ch => {
+                    const id = getChannelId(ch);
+                    if (!favorites.includes(id)) favorites.push(id);
+                });
+            }
+            setFavorites(favorites);
+            buildSidebar();
+            applyFilters(true);
+        }
+
+        function getChannelId(channel) {
+            if (channel.stream_id) return channel.stream_id.toString();
+            return channel.name + '_' + (channel.category || 'عام');
+        }
+
+        function normalizeChannels(channels) {
+            return channels.map(ch => {
+                if (ch.stream_icon && !ch.icon) ch.icon = ch.stream_icon;
+                if (ch.icon && !ch.stream_icon) ch.stream_icon = ch.icon;
+                if (!ch.category) ch.category = 'عام';
+                if (!ch.url) ch.url = '';
+                return ch;
+            });
+        }
+
+        function applyFilters(resetDisplay = true) {
+            const search = document.getElementById('searchInput');
+            const searchVal = search ? search.value.trim().toLowerCase() : '';
+            let filtered = allChannels;
+
+            if (currentCategory === 'المفضلة') {
+                filtered = allChannels.filter(ch => favorites.includes(getChannelId(ch)));
+            } else if (currentCategory !== 'الكل') {
+                filtered = filtered.filter(ch => (ch.category || 'عام') === currentCategory);
+            }
+
+            if (searchVal) {
+                filtered = filtered.filter(ch => ch.name.toLowerCase().includes(searchVal));
+            }
+
+            allChannelsFiltered = filtered;
+            if (resetDisplay) {
+                displayCount = Math.min(STEP, allChannelsFiltered.length);
+            } else {
+                displayCount = Math.min(displayCount + STEP, allChannelsFiltered.length);
+            }
+            renderGrid(allChannelsFiltered.slice(0, displayCount), allChannelsFiltered.length);
+
+            const countEl = document.getElementById('channelCount');
+            if (countEl) countEl.textContent = allChannelsFiltered.length;
+        }
+
+        function renderGrid(channelsToShow, totalCount) {
+            const container = document.getElementById('channelsContainer');
+            const user = getUser();
+
+            if (!user) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <h2>${getTranslation('pleaseLogin')}</h2>
+                        <p>${getTranslation('loginToView')}</p>
+                        <button class="btn-add-large" onclick="openLoginModal()">
+                            <i class="fas fa-sign-in-alt"></i> ${getTranslation('loginButton')}
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            if (!channelsToShow || channelsToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-tv"></i>
+                        <h2>${getTranslation('noChannels')}</h2>
+                        <p>${getTranslation('setupStalker')} <strong>"${getTranslation('stalker')}"</strong> ${getTranslation('adminOnly')}، ${getTranslation('orAddManual')}</p>
+                        <button class="btn-add-large" onclick="openAddModal()">
+                            <i class="fas fa-plus"></i> ${getTranslation('addNewChannel')}
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = `
+                <div class="channels-grid">
+                    ${channelsToShow.map((ch, idx) => {
+                        const realIndex = allChannels.indexOf(ch);
+                        const iconHtml = ch.icon ? `<img class="ch-icon" src="${ch.icon}" alt="" onerror="this.style.display='none'" />` : '';
+                        const isFav = favorites.includes(getChannelId(ch));
+                        const catDisplay = translateCategory(ch.category || 'عام');
+                        return `
+                            <div class="channel-card">
+                                <div class="ch-name">
+                                    ${iconHtml}
+                                    <i class="fas fa-broadcast-tower"></i> ${ch.name || 'بدون اسم'}
+                                </div>
+                                <span class="ch-cat">${catDisplay}</span>
+                                <div class="card-actions">
+                                    <button class="btn-play" onclick="playChannel(${realIndex})">
+                                        <i class="fas fa-play"></i> ${getTranslation('play')}
+                                    </button>
+                                    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFavorite(${realIndex})" title="${isFav ? getTranslation('removeFav') : getTranslation('addFav')}">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                ${totalCount > displayCount ? `<div style="text-align:center; padding:16px; color:var(--text-secondary); font-size:14px;" id="loadMoreIndicator">${getTranslation('loadingMore')}</div>` : ''}
+                ${totalCount > 0 && totalCount <= displayCount ? `<div style="text-align:center; padding:16px; color:var(--text-secondary); font-size:14px;">${getTranslation('endOfList')}</div>` : ''}
+            `;
+            container.innerHTML = html;
+        }
+
+        function setupInfiniteScroll() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !isLoadingMore) {
+                        const total = allChannelsFiltered.length;
+                        if (displayCount < total) {
+                            isLoadingMore = true;
+                            setTimeout(() => {
+                                applyFilters(false);
+                                isLoadingMore = false;
+                            }, 300);
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            const trigger = document.getElementById('scrollTrigger');
+            if (trigger) observer.observe(trigger);
+            else {
+                const container = document.getElementById('channelsContainer');
+                const el = document.createElement('div');
+                el.id = 'scrollTrigger';
+                el.style.height = '1px';
+                el.style.visibility = 'hidden';
+                container.parentNode.appendChild(el);
+                observer.observe(el);
+            }
+        }
+
+        function selectCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.sidebar .cat-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.cat === cat);
+            });
+            displayCount = STEP;
+            applyFilters(true);
+            setupInfiniteScroll();
+        }
+
+        function toggleFavorite(index) {
+            const channel = allChannels[index];
+            if (!channel) return;
+            const id = getChannelId(channel);
+            const idx = favorites.indexOf(id);
+            if (idx > -1) favorites.splice(idx, 1);
+            else favorites.push(id);
+            setFavorites(favorites);
+            buildSidebar();
+            applyFilters(true);
+            saveChannelsToServer();
+            setupInfiniteScroll();
+        }
+
+        // ================================================================
+        // 6.  المصادقة
+        // ================================================================
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginStatus').textContent = '';
+            document.getElementById('loginStatus').className = 'status-msg';
+            document.getElementById('loginEmail').focus();
+            document.getElementById('loginModalTitle').innerHTML = `<i class="fas fa-sign-in-alt" style="color:var(--accent);"></i> ${getTranslation('login')}`;
+            document.getElementById('loginEmailLabel').textContent = getTranslation('email');
+            document.getElementById('loginPasswordLabel').textContent = getTranslation('password');
+            document.getElementById('loginBtn').innerHTML = `<i class="fas fa-sign-in-alt"></i> ${getTranslation('login')}`;
+            document.getElementById('noAccountText').textContent = getTranslation('noAccount');
+            document.getElementById('registerLink').textContent = getTranslation('registerNow');
+            document.getElementById('registerEmailLabel').textContent = getTranslation('email');
+            document.getElementById('registerPasswordLabel').textContent = getTranslation('password');
+            document.getElementById('registerBtn').innerHTML = `<i class="fas fa-user-plus"></i> ${getTranslation('register')}`;
+            document.getElementById('haveAccountText').textContent = getTranslation('haveAccount');
+            document.getElementById('loginLink').textContent = getTranslation('loginNow');
+        }
+
+        function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('registerStatus').textContent = '';
+            document.getElementById('registerStatus').className = 'status-msg';
+            document.getElementById('registerEmail').focus();
+        }
+        function showLogin() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('loginStatus').textContent = '';
+            document.getElementById('loginStatus').className = 'status-msg';
+            document.getElementById('loginEmail').focus();
+        }
+        function openRegisterModal() {
+            document.getElementById('loginModal').classList.add('active');
+            showRegister();
+        }
+
+        function showLoadingModal() {
+            const modal = document.getElementById('loadingModal');
+            modal.classList.add('active');
+            document.getElementById('loadingModalTitle').innerHTML = `<i class="fas fa-spinner fa-spin" style="color:var(--accent);"></i> ${getTranslation('loading')}`;
+            document.getElementById('loadingModalText').textContent = getTranslation('pleaseWait');
+            const progress = document.getElementById('loadingProgress');
+            progress.style.width = '0%';
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) { clearInterval(interval); return; }
+                width += 2;
+                progress.style.width = width + '%';
+            }, 100);
+            window._loadingInterval = interval;
+        }
+
+        function hideLoadingModal() {
+            const modal = document.getElementById('loadingModal');
+            modal.classList.remove('active');
+            if (window._loadingInterval) { clearInterval(window._loadingInterval); window._loadingInterval = null; }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const statusEl = document.getElementById('loginStatus');
+            if (!email || !password) {
+                statusEl.textContent = getTranslation('fillEmailPassword');
+                statusEl.className = 'status-msg error';
+                return;
+            }
+            statusEl.textContent = getTranslation('loginInProgress');
+            statusEl.className = 'status-msg';
+            try {
+                const data = await apiCall('POST', '/auth/login', { email, password });
+                setToken(data.token);
+                setUser(data.user);
+                closeLoginModal();
+                showLoadingModal();
+                await initializeApp(true);
+                await loadNotifications();
+                setTimeout(hideLoadingModal, 3000);
+            } catch (err) {
+                statusEl.textContent = '❌ ' + err.message;
+                statusEl.className = 'status-msg error';
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const statusEl = document.getElementById('registerStatus');
+            if (!email || !password) {
+                statusEl.textContent = getTranslation('fillEmailPassword');
+                statusEl.className = 'status-msg error';
+                return;
+            }
+            if (password.length < 6) {
+                statusEl.textContent = getTranslation('passwordMin6');
+                statusEl.className = 'status-msg error';
+                return;
+            }
+            statusEl.textContent = getTranslation('registerInProgress');
+            statusEl.className = 'status-msg';
+            try {
+                const data = await apiCall('POST', '/auth/register', { email, password });
+                setToken(data.token);
+                setUser(data.user);
+                closeLoginModal();
+                showLoadingModal();
+                await initializeApp(true);
+                await loadNotifications();
+                setTimeout(hideLoadingModal, 3000);
+            } catch (err) {
+                statusEl.textContent = '❌ ' + err.message;
+                statusEl.className = 'status-msg error';
+            }
+        }
+
+        function logout() {
+            if (!confirm(getTranslation('confirmLogout'))) return;
+            setToken(null);
+            setUser(null);
+            setFavorites([]);
+            allChannels = [];
+            currentCategory = 'الكل';
+            displayCount = STEP;
+            allChannelsFiltered = [];
+            notifications = [];
+            unreadCount = 0;
+            renderHeader();
+            buildSidebar();
+            applyFilters(true);
+            setupInfiniteScroll();
+        }
+
+        // ================================================================
+        // 7.  STALKER Portal
+        // ================================================================
+        function openStalkerModal() {
+            const user = getUser();
+            if (!user) { alert(getTranslation('loginFirst')); return; }
+            if (user.role !== 'admin') { alert(getTranslation('adminOnlySettings')); return; }
+            document.getElementById('stalkerModal').classList.add('active');
+            document.getElementById('stalkerModalTitle').innerHTML = `<i class="fas fa-key" style="color:#9b59b6;"></i> ${getTranslation('stalkerSettings')}`;
+            document.getElementById('stalkerServerLabel').textContent = getTranslation('portalUrl');
+            document.getElementById('stalkerMacLabel').textContent = getTranslation('macAddress');
+            document.getElementById('stalkerDeviceIdLabel').textContent = getTranslation('deviceId');
+            document.getElementById('stalkerSerialLabel').textContent = getTranslation('serial');
+            document.getElementById('stalkerSaveBtn').innerHTML = `<i class="fas fa-save"></i> ${getTranslation('saveAndFetch')}`;
+            document.getElementById('stalkerServer').value = user.stalker?.server || '';
+            document.getElementById('stalkerMac').value = user.stalker?.mac || '';
+            document.getElementById('stalkerDeviceId').value = user.stalker?.deviceId || '';
+            document.getElementById('stalkerSerial').value = user.stalker?.serial || '';
+            document.getElementById('stalkerStatus').textContent = '';
+            document.getElementById('stalkerStatus').className = 'status-msg';
+        }
+
+        function closeStalkerModal() { document.getElementById('stalkerModal').classList.remove('active'); }
+
+        async function saveStalkerSettings() {
+            const user = getUser();
+            if (!user || user.role !== 'admin') { alert(getTranslation('notAuthorized')); return; }
+            const server = document.getElementById('stalkerServer').value.trim();
+            const mac = document.getElementById('stalkerMac').value.trim();
+            const deviceId = document.getElementById('stalkerDeviceId').value.trim();
+            const serial = document.getElementById('stalkerSerial').value.trim();
+            const statusEl = document.getElementById('stalkerStatus');
+            if (!server || !mac) {
+                statusEl.textContent = getTranslation('fillAllFields');
+                statusEl.className = 'status-msg error';
+                return;
+            }
+            statusEl.textContent = '⏳ ' + getTranslation('saveAndFetch') + '...';
+            statusEl.className = 'status-msg';
+            try {
+                const result = await apiCall('POST', '/user/stalker', { server, mac, deviceId, serial });
+                allChannels = normalizeChannels(result.channels || []);
+                applyCategoryMap();
+                localStorage.setItem('hacene_channels', JSON.stringify(allChannels));
+                const user = getUser();
+                if (user) { 
+                    user.stalker = { server, mac, deviceId, serial }; 
+                    setUser(user); 
+                }
+                setFavorites([]);
+                closeStalkerModal();
+                buildSidebar();
+                displayCount = STEP;
+                applyFilters(true);
+                setupInfiniteScroll();
+                statusEl.textContent = getTranslation('fetchSuccess', { count: allChannels.length });
+                statusEl.className = 'status-msg success';
+                setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'status-msg'; }, 3000);
+            } catch (err) {
+                statusEl.textContent = '❌ ' + err.message;
+                statusEl.className = 'status-msg error';
+            }
+        }
+
+        // ================================================================
+        // 8.  القنوات
+        // ================================================================
+        function openAddModal() {
+            const user = getUser();
+            if (!user) { alert(getTranslation('loginFirst')); return; }
+            document.getElementById('addModal').classList.add('active');
+            document.getElementById('addModalTitle').innerHTML = `<i class="fas fa-plus-circle" style="color:var(--accent);"></i> ${getTranslation('addChannel')}`;
+            document.getElementById('addNameLabel').textContent = getTranslation('channelName');
+            document.getElementById('addCategoryLabel').textContent = getTranslation('category');
+            document.getElementById('addUrlLabel').textContent = getTranslation('streamUrl');
+            document.getElementById('addSaveBtn').innerHTML = `<i class="fas fa-save"></i> ${getTranslation('save')}`;
+            document.getElementById('inputName').value = '';
+            document.getElementById('inputCategory').value = '';
+            document.getElementById('inputUrl').value = '';
+            document.getElementById('inputName').focus();
+        }
+
+        function closeAddModal() { document.getElementById('addModal').classList.remove('active'); }
+
+        async function saveChannel() {
+            const name = document.getElementById('inputName').value.trim();
+            const category = document.getElementById('inputCategory').value.trim() || 'عام';
+            const url = document.getElementById('inputUrl').value.trim();
+            if (!name) { alert(getTranslation('enterChannelName')); return; }
+            if (!url) { alert(getTranslation('pasteChannelUrl')); return; }
+            let finalCategory = category;
+            if (CHANNEL_CATEGORY_MAP[name]) finalCategory = CHANNEL_CATEGORY_MAP[name];
+            const newChannel = { name, category: finalCategory, url, stream_id: null, icon: '' };
+            allChannels.push(newChannel);
+            await saveChannelsToServer();
+            closeAddModal();
+            buildSidebar();
+            displayCount = STEP;
+            applyFilters(true);
+            setupInfiniteScroll();
+        }
+
+        async function saveChannelsToServer() {
+            try {
+                await apiCall('POST', '/user/channels', { channels: allChannels });
+                localStorage.setItem('hacene_channels', JSON.stringify(allChannels));
+            } catch (err) { console.error('Failed to save channels:', err); }
+        }
+
+        function playChannel(index) {
+            const channel = allChannels[index];
+            if (!channel) { alert(getTranslation('channelNotFound')); return; }
+            let url = channel.url;
+            if (!url || url === '#') { 
+                // محاولة بناء الرابط إذا كان مخزناً بشكل مختلف
+                const user = getUser();
+                if (user?.stalker && channel.stream_id) {
+                    const { server, mac } = user.stalker;
+                    // نطلب من الخادم تجديد الرابط
+                    fetch(`${API_URL}/user/stalker-link`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+                        body: JSON.stringify({ stream_id: channel.stream_id })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.url) {
+                            window.location.href = data.url;
+                        } else {
+                            alert(getTranslation('invalidUrl'));
+                        }
+                    })
+                    .catch(() => alert(getTranslation('invalidUrl')));
+                    return;
+                }
+                alert(getTranslation('invalidUrl')); 
+                return; 
+            }
+            window.location.href = url;
+        }
+
+        function applyCategoryMap() {
+            allChannels = allChannels.map(ch => {
+                const newCat = CHANNEL_CATEGORY_MAP[ch.name];
+                if (newCat) ch.category = newCat;
+                return ch;
+            });
+            allChannels = normalizeChannels(allChannels);
+        }
+
+        // ================================================================
+        // 9.  Admin
+        // ================================================================
+        async function openAdminModal() {
+            const user = getUser();
+            if (!user || user.role !== 'admin') { alert(getTranslation('adminOnlyPage')); return; }
+            document.getElementById('adminModal').classList.add('active');
+            document.getElementById('adminStatus').textContent = '';
+            document.getElementById('adminStatus').className = 'status-msg';
+            document.getElementById('adminModalTitle').innerHTML = `<i class="fas fa-users-cog" style="color:var(--warning);"></i> ${getTranslation('adminDashboard')}`;
+            document.getElementById('adminUsersTitle').textContent = getTranslation('userManagement');
+            document.getElementById('adminEmailTh').textContent = getTranslation('email');
+            document.getElementById('adminStatusTh').textContent = getTranslation('status');
+            document.getElementById('adminStalkerTh').textContent = getTranslation('adminStalkerTh');
+            document.getElementById('adminActionsTh').textContent = getTranslation('actions');
+            document.getElementById('adminNotifTitle').innerHTML = `<i class="fas fa-bell"></i> ${getTranslation('sendNotification')}`;
+            document.getElementById('adminNotifLabel').textContent = getTranslation('notificationMessage');
+            document.getElementById('adminNotifTargetLabel').textContent = getTranslation('adminNotifTargetLabel');
+            document.getElementById('adminNotifMessage').value = '';
+            document.getElementById('adminNotifTarget').value = '';
+            document.getElementById('adminNotifStatus').textContent = '';
+            document.getElementById('adminNotifStatus').className = 'status-msg';
+            await loadAdminUsers();
+        }
+
+        function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); }
+
+        async function loadAdminUsers() {
+            try {
+                const data = await apiCall('GET', '/admin/users');
+                const tbody = document.getElementById('adminUsersBody');
+                if (!data.users || data.users.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-secondary);">${getTranslation('noUsers')}</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = data.users.map(u => `
+                    <tr>
+                        <td class="user-email">${u.email}</td>
+                        <td><span class="status-badge ${u.isActive ? 'active' : 'inactive'}">${u.isActive ? getTranslation('active') : getTranslation('inactive')}</span></td>
+                        <td style="font-size:11px;color:var(--text-secondary);">${u.stalker?.server ? '✅' : '❌'}</td>
+                        <td>
+                            <button class="btn-icon warning" onclick="openEditUser('${u._id}')" title="${getTranslation('edit')}"><i class="fas fa-edit"></i></button>
+                            <button class="btn-icon danger" onclick="deleteUser('${u._id}')" title="${getTranslation('delete')}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                const status = document.getElementById('adminStatus');
+                status.textContent = '❌ ' + err.message;
+                status.className = 'status-msg error';
+            }
+        }
+
+        let editingUserId = null;
+
+        async function openEditUser(userId) {
+            try {
+                const data = await apiCall('GET', '/admin/users');
+                const user = data.users.find(u => u._id === userId);
+                if (!user) { alert(getTranslation('userNotFound')); return; }
+                editingUserId = userId;
+                document.getElementById('editUserModalTitle').innerHTML = `<i class="fas fa-user-edit" style="color:var(--warning);"></i> ${getTranslation('editUser')}`;
+                document.getElementById('editUserEmailLabel').textContent = getTranslation('email');
+                document.getElementById('editUserStatusLabel').textContent = getTranslation('status');
+                document.getElementById('editUserStatusActive').textContent = getTranslation('active');
+                document.getElementById('editUserStatusInactive').textContent = getTranslation('inactive');
+                document.getElementById('editUserServerLabel').textContent = getTranslation('portalUrl');
+                document.getElementById('editUserMacLabel').textContent = getTranslation('macAddress');
+                document.getElementById('editUserDeviceIdLabel').textContent = getTranslation('deviceId');
+                document.getElementById('editUserSerialLabel').textContent = getTranslation('serial');
+                document.getElementById('editUserSaveBtn').innerHTML = `<i class="fas fa-save"></i> ${getTranslation('saveChanges')}`;
+                document.getElementById('editUserEmail').value = user.email;
+                document.getElementById('editUserStatus').value = user.isActive ? 'true' : 'false';
+                document.getElementById('editUserServer').value = user.stalker?.server || '';
+                document.getElementById('editUserMac').value = user.stalker?.mac || '';
+                document.getElementById('editUserDeviceId').value = user.stalker?.deviceId || '';
+                document.getElementById('editUserSerial').value = user.stalker?.serial || '';
+                document.getElementById('editUserStatusMsg').textContent = '';
+                document.getElementById('editUserStatusMsg').className = 'status-msg';
+                document.getElementById('editUserModal').classList.add('active');
+            } catch (err) { alert('❌ ' + err.message); }
+        }
+
+        function closeEditUserModal() { document.getElementById('editUserModal').classList.remove('active'); editingUserId = null; }
+
+        async function saveEditUser() {
+            const statusEl = document.getElementById('editUserStatusMsg');
+            if (!editingUserId) { statusEl.textContent = getTranslation('userNotSpecified'); statusEl.className = 'status-msg error'; return; }
+            const isActive = document.getElementById('editUserStatus').value === 'true';
+            const server = document.getElementById('editUserServer').value.trim();
+            const mac = document.getElementById('editUserMac').value.trim();
+            const deviceId = document.getElementById('editUserDeviceId').value.trim();
+            const serial = document.getElementById('editUserSerial').value.trim();
+            statusEl.textContent = '⏳ ' + getTranslation('saveChanges') + '...';
+            statusEl.className = 'status-msg';
+            try {
+                await apiCall('PUT', `/admin/users/${editingUserId}`, { isActive, stalker: { server, mac, deviceId, serial } });
+                statusEl.textContent = getTranslation('updateSuccess');
+                statusEl.className = 'status-msg success';
+                setTimeout(() => { closeEditUserModal(); loadAdminUsers(); }, 1000);
+            } catch (err) {
+                statusEl.textContent = '❌ ' + err.message;
+                statusEl.className = 'status-msg error';
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm(getTranslation('confirmDeleteUser'))) return;
+            try {
+                await apiCall('DELETE', `/admin/users/${userId}`);
+                await loadAdminUsers();
+            } catch (err) { alert('❌ ' + err.message); }
+        }
+
+        // ===== Admin Notification =====
+        async function sendNotification() {
+            const message = document.getElementById('adminNotifMessage').value.trim();
+            const targetEmail = document.getElementById('adminNotifTarget').value.trim();
+            const statusEl = document.getElementById('adminNotifStatus');
+            if (!message) {
+                statusEl.textContent = getTranslation('fillAllFields');
+                statusEl.className = 'status-msg error';
+                return;
+            }
+            statusEl.textContent = '⏳ ' + getTranslation('send') + '...';
+            statusEl.className = 'status-msg';
+            try {
+                const body = { message };
+                if (targetEmail) body.targetEmail = targetEmail;
+                const result = await apiCall('POST', '/admin/notifications', body);
+                const count = result.count || 0;
+                const msg = targetEmail ? `✅ تم إرسال الإشعار إلى المستخدم "${targetEmail}"` : getTranslation('notificationSent', { count });
+                statusEl.textContent = msg;
+                statusEl.className = 'status-msg success';
+                document.getElementById('adminNotifMessage').value = '';
+                document.getElementById('adminNotifTarget').value = '';
+                if (currentUser) await loadNotifications();
+            } catch (err) {
+                statusEl.textContent = '❌ ' + err.message;
+                statusEl.className = 'status-msg error';
+            }
+        }
+
+        // ================================================================
+        // 10.  الإشعارات
+        // ================================================================
+        async function loadNotifications() {
+            if (!getUser()) return;
+            try {
+                const data = await apiCall('GET', '/user/notifications');
+                notifications = data.notifications || [];
+                unreadCount = notifications.filter(n => !n.read).length;
+                updateNotifBadge();
+                renderNotifDropdown();
+            } catch (err) {
+                console.error('Failed to load notifications:', err);
+            }
+        }
+
+        function updateNotifBadge() {
+            const badge = document.getElementById('notifBadge');
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = 'inline';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+
+        function toggleNotifDropdown() {
+            const dropdown = document.getElementById('notifDropdown');
+            dropdown.classList.toggle('active');
+            if (dropdown.classList.contains('active')) {
+                renderNotifDropdown();
+                markAllAsRead();
+            }
+        }
+
+        function renderNotifDropdown() {
+            const dropdown = document.getElementById('notifDropdown');
+            if (!dropdown) return;
+            if (notifications.length === 0) {
+                dropdown.innerHTML = `<div class="notif-empty">${getTranslation('noNotifications')}</div>`;
+                return;
+            }
+            const html = notifications.map(n => `
+                <div class="notif-item">
+                    <span class="notif-text">${n.message}</span>
+                    <span class="notif-time">${new Date(n.createdAt).toLocaleString()}</span>
+                    ${!n.read ? `<button class="notif-read-btn" onclick="markNotificationRead('${n._id}')">${getTranslation('markAsRead')}</button>` : ''}
+                </div>
+            `).join('');
+            dropdown.innerHTML = html;
+        }
+
+        async function markNotificationRead(id) {
+            try {
+                await apiCall('PUT', `/user/notifications/${id}/read`);
+                await loadNotifications();
+                renderNotifDropdown();
+            } catch (err) {
+                console.error('Failed to mark notification as read:', err);
+            }
+        }
+
+        async function markAllAsRead() {
+            const unread = notifications.filter(n => !n.read);
+            for (let n of unread) {
+                try {
+                    await apiCall('PUT', `/user/notifications/${n._id}/read`);
+                } catch (e) {}
+            }
+            await loadNotifications();
+            renderNotifDropdown();
+        }
+
+        // ================================================================
+        // 11.  About & Contact Modals
+        // ================================================================
+        function openAboutModal() {
+            const modal = document.getElementById('aboutModal');
+            modal.classList.add('active');
+            document.getElementById('aboutModalTitle').innerHTML = `<i class="fas fa-info-circle" style="color:var(--accent);"></i> ${getTranslation('aboutTitle')}`;
+            document.getElementById('aboutContent').innerHTML = `
+                <p>${getTranslation('aboutDesc')}</p>
+            `;
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').classList.remove('active');
+        }
+
+        function openContactModal() {
+            const modal = document.getElementById('contactModal');
+            modal.classList.add('active');
+            document.getElementById('contactModalTitle').innerHTML = `<i class="fas fa-envelope" style="color:var(--accent);"></i> ${getTranslation('contactTitle')}`;
+            document.getElementById('contactContent').innerHTML = `
+                <p>${getTranslation('contactInfo')}</p>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:stevenhacen@gmail.com">stevenhacen@gmail.com</a>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <a href="tel:0542163526">0542163526</a>
+                </div>
+                <p style="margin-top:15px;">${getTranslation('contactWaiting')}</p>
+            `;
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.remove('active');
+        }
+
+        // ================================================================
+        // 12.  Scroll to Top
+        // ================================================================
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handleScroll() {
+            const btn = document.getElementById('scrollTopBtn');
+            if (window.scrollY > 300) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        }
+
+        // ================================================================
+        // 13.  التهيئة
+        // ================================================================
+        async function initializeApp(forceRefresh = false) {
+            if (appInitialized && !forceRefresh) return;
+            if (forceRefresh) {
+                appInitialized = false;
+                localStorage.removeItem('hacene_channels');
+                allChannels = [];
+                favorites = [];
+                displayCount = STEP;
+            }
+
+            const savedLang = localStorage.getItem('hacene_lang');
+            if (savedLang && (savedLang === 'ar' || savedLang === 'fr')) currentLang = savedLang;
+            else currentLang = 'ar';
+            document.documentElement.lang = currentLang === 'ar' ? 'ar' : 'fr';
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+            applyTheme();
+
+            appInitialized = true;
+
+            const token = getToken();
+            const user = getUser();
+
+            if (token && user) {
+                try {
+                    const data = await apiCall('GET', '/auth/me');
+                    setUser(data.user);
+                    const channelsData = await apiCall('GET', '/user/channels');
+                    if (channelsData.channels && channelsData.channels.length > 0) {
+                        allChannels = normalizeChannels(channelsData.channels);
+                        applyCategoryMap();
+                        localStorage.setItem('hacene_channels', JSON.stringify(allChannels));
+                    } else {
+                        if (DEFAULT_CHANNELS && DEFAULT_CHANNELS.length > 0) {
+                            allChannels = normalizeChannels(JSON.parse(JSON.stringify(DEFAULT_CHANNELS)));
+                            applyCategoryMap();
+                            try {
+                                await apiCall('POST', '/user/channels', { channels: allChannels });
+                            } catch (saveErr) { console.warn('⚠️ Failed to save default channels:', saveErr.message); }
+                            localStorage.setItem('hacene_channels', JSON.stringify(allChannels));
+                        } else {
+                            allChannels = [];
+                        }
+                    }
+                    await loadNotifications();
+                } catch (err) {
+                    console.error('❌ Error initializing:', err.message);
+                    setToken(null);
+                    setUser(null);
+                    allChannels = [];
+                }
+            } else {
+                const stored = localStorage.getItem('hacene_channels');
+                if (stored) {
+                    try {
+                        allChannels = normalizeChannels(JSON.parse(stored));
+                        applyCategoryMap();
+                    } catch (e) { allChannels = []; }
+                } else {
+                    allChannels = [];
+                }
+            }
+
+            currentCategory = 'الكل';
+            favorites = getFavorites();
+            displayCount = STEP;
+            allChannelsFiltered = allChannels.slice();
+
+            renderHeader();
+            buildSidebar();
+            applyFilters(true);
+            setupInfiniteScroll();
+
+            if (getUser()) {
+                setTimeout(() => loadNotifications(), 500);
+            }
+        }
+
+        // ================================================================
+        // 14.  بدء التطبيق
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeApp(false);
+            window.addEventListener('scroll', handleScroll);
+            document.addEventListener('click', (e) => {
+                const wrapper = document.querySelector('.notif-wrapper');
+                const dropdown = document.getElementById('notifDropdown');
+                if (wrapper && !wrapper.contains(e.target) && dropdown) {
+                    dropdown.classList.remove('active');
+                }
+                const aboutModal = document.getElementById('aboutModal');
+                const contactModal = document.getElementById('contactModal');
+                if (aboutModal.classList.contains('active') && e.target === aboutModal) {
+                    closeAboutModal();
+                }
+                if (contactModal.classList.contains('active') && e.target === contactModal) {
+                    closeContactModal();
+                }
+            });
+        });
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            initializeApp(false);
+            window.addEventListener('scroll', handleScroll);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLoginModal();
+                closeStalkerModal();
+                closeAddModal();
+                closeAdminModal();
+                closeEditUserModal();
+                closeAboutModal();
+                closeContactModal();
+                document.getElementById('notifDropdown')?.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
