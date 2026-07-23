@@ -1,7 +1,7 @@
 {
-  "name": "hacenetv-stalker-backend",
+  "name": "hacenetv-stalker",
   "version": "2.0.0",
-  "description": "HACENE TV Backend with STALKER MAC Portal support",
+  "description": "HACENE TV with STALKER MAC Portal support",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
